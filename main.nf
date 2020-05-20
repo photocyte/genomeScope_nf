@@ -77,7 +77,6 @@ input:
 shell:
 '''
 git clone https://github.com/tbenavi1/genomescope2.0.git
-cd genomescope2.0/
 
 #mkdir "$CONDA_PREFIX/lib/R_libs"
 #sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" install.R

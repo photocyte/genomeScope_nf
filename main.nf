@@ -9,6 +9,8 @@ input:
  val maxKmerCov
  path reads
 output:
+ val theK
+ val maxKmerCov
  path "reads.histo"
 shell:
 '''
@@ -50,10 +52,9 @@ genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 }
 
 workflow countAndPlot_wf {
- take: kmerK ; reads
+ take: kmerK ; maxCov ; reads
  main:
-  jellyfishCount(kmerK,reads)
-  genomeScope2(kmerK,jellyfishCount.out)
+  jellyfishCount(kmerK,maxCov,reads) | genomeScope2()
 }
 
 workflow {

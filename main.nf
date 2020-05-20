@@ -6,6 +6,7 @@ memory "50GB"
 conda "jellyfish"
 input:
  val theK
+ val maxKmerCov
  path reads
 output:
  path "reads.histo"
@@ -20,7 +21,7 @@ do
 done
 
 jellyfish count -C -m !{theK} -s 1000000000 -t !{task.cpus} $(cat fifos.txt | tr '\n' ' ') -o reads.jf
-jellyfish histo -t !{task.cpus} reads.jf > reads.histo
+jellyfish histo -t !{task.cpus} --high !{maxKmerCov} reads.jf > reads.histo
 
 ##Cleanup temporary files. The named pipes won't take up any space.
 rm -f reads.jf
@@ -32,14 +33,19 @@ process genomeScope2 {
 conda "r"
 input:
  val theK
+ val maxKmerCov
  path kmerCounts
 shell:
 '''
 git clone https://github.com/tbenavi1/genomescope2.0.git
 cd genomescope2.0/
+mkdir "$CONDA_PREFIX/lib/R_libs"
 sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" install.R
 Rscript install.R
-genomescope.R -i !{kmerCounts} -o output_dir -k !{theK}
+
+echo "$(head -n 1 install.R)" >> $CONDAPREFIX/lib/R/etc/Renviron
+
+genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 '''
 }
 
@@ -57,5 +63,9 @@ workflow {
  reads        : ${params.reads}
  (If 'null', you have to pass a --reads parameter)
  """
- countAndPlot_wf(Channel.value("21"),Channel.fromPath(params.reads).collect())
+ theK = Channel.value("21")
+ maxKmerCov = Channel.value("1000000")
+ reads = Channel.fromPath(params.reads).collect()
+
+ countAndPlot_wf(theK,maxKmerCov,reads)
 }

@@ -45,7 +45,7 @@ output:
  path "merged.jf"
 shell:
 '''
-jellyfish merge --upper-count=!{maxKmerCov} !{jellyfishDbs} > merged.jf
+jellyfish merge --upper-count=!{maxKmerCov} !{jellyfishDbs} -o merged.jf
 '''
 }
 
@@ -63,7 +63,7 @@ output:
  path "merged.histo"
 shell:
 '''
-jellyfish histo -t !{task.cpus} --high=!{maxKmerCov} !{jellyfishDbs} > merged.histo
+jellyfish histo -t !{task.cpus} --high=!{maxKmerCov} !{jellyfishDbs} -o merged.histo
 '''
 }
 

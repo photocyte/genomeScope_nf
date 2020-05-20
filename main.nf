@@ -11,8 +11,8 @@ input:
  val maxKmerCov
  path reads
 output:
- path "*reads.jf", emit:jellyfishDbs
-tag "${reads}[0]"
+ path "*.jf", emit:jellyfishDbs
+tag "${reads[0]}"
 shell:
 '''
 ##Decompress files in parallel using named pipes.
@@ -23,7 +23,7 @@ do
  echo ${f%.gz} >> fifos.txt
 done
 
-jellyfish count -C -m !{theK} -s 10000000000 -t !{task.cpus} --upper-count=!{maxKmerCov} $(cat fifos.txt | tr '\n' ' ') -o !{reads}[0].reads.jf
+jellyfish count -C -m !{theK} -s 10000000000 -t !{task.cpus} --upper-count=!{maxKmerCov} $(cat fifos.txt | tr '\n' ' ') -o !{reads[0]}.jf
 
 ##Cleanup temporary files. The named pipes won't take up any space.
 ##rm -f reads.jf
@@ -87,7 +87,7 @@ workflow {
  """
  theK = Channel.value("21")
  maxKmerCov = Channel.value("1000000")
- reads = Channel.fromPath(params.reads).collect()
+ reads = Channel.fromPath(params.reads)
 
  countAndPlot_wf(theK,maxKmerCov,reads)
 }

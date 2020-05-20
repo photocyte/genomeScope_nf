@@ -77,7 +77,12 @@ input:
 shell:
 '''
 git clone https://github.com/tbenavi1/genomescope2.0.git
-mkdir "$CONDA_PREFIX/lib/R_libs"
+
+if [[ ! -d "$CONDA_PREFIX/lib/R_libs" ]]
+then
+ mkdir "$CONDA_PREFIX/lib/R_libs"
+fi
+
 sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" ./genomescope2.0/install.R
 cat ./genomescope2.0/install.R | grep -v "minpack.lm" | grep -v "argparse" > tmp.R ##installs handled by bioconda
 mv -f tmp.R ./genomescope2.0/install.R

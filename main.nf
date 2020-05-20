@@ -54,7 +54,7 @@ genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 workflow countAndPlot_wf {
  take: kmerK ; maxCov ; reads
  main:
-  jellyfishCount(kmerK,maxCov,reads) | genomeScope2()
+  jellyfishCount(kmerK,maxCov,reads) | genomeScope2
 }
 
 workflow {

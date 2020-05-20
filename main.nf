@@ -45,5 +45,5 @@ workflow {
  reads        : ${params.reads}
  (If 'null', you have to pass a --reads parameter)
  """
- countAndPlot_wf(Channel.value("21"),Channel.fromPath(params.reads).flatten())
+ countAndPlot_wf(Channel.value("21"),Channel.fromPath(params.reads).collect())
 }

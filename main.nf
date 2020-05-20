@@ -11,9 +11,7 @@ input:
  val maxKmerCov
  path reads
 output:
- val theK, emit: theK
- val maxKmerCov, emit:maxKmerCov
- path "*reads.jf", emit: jellyfishDbs
+ path "*reads.jf", emit:jellyfishDbs
 tag "${reads}[0]"
 shell:
 '''
@@ -76,7 +74,7 @@ workflow countAndPlot_wf {
  take: kmerK ; maxCov ; reads
  main:
   jellyfishCount(kmerK,maxCov,reads)
-  jellyfishMerge(kmerK,maxCov,jellyfishCount.out.jellyFishDbs.collect()) | genomeScope2
+  jellyfishMerge(kmerK,maxCov,jellyfishCount.out.jellyfishDbs.collect()) | genomeScope2
   
 }
 

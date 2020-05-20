@@ -31,6 +31,7 @@ jellyfish count -C -m !{theK} -s 10000000000 -t !{task.cpus} --upper-count=!{max
 }
 
 process jellyfishMerge {
+executor "local"
 cpus 1
 memory "100GB"
 conda "jellyfish"
@@ -62,11 +63,12 @@ output:
  path "merged.histo"
 shell:
 '''
-jellyfish histo -t !{task.cpus} --high !{maxKmerCov} !{jellyfishDbs} > merged.histo
+jellyfish histo -t !{task.cpus} --high=!{maxKmerCov} !{jellyfishDbs} > merged.histo
 '''
 }
 
 process genomeScope2 {
+executor "local"
 conda "r r-minpack.lm r-argparse"
 input:
  val theK

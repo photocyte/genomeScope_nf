@@ -4,16 +4,17 @@ nextflow.preview.dsl=2
 
 process jellyfishCount {
 cpus 10 
-memory "50GB"
+memory "100GB"
 conda "jellyfish"
 input:
  val theK
  val maxKmerCov
  path reads
 output:
- val theK
- val maxKmerCov
- path "reads.histo"
+ val theK, emit: theK
+ val maxKmerCov, emit:maxKmerCov
+ path "*reads.jf", emit: jellyfishDbs
+tag "${reads}[0]"
 shell:
 '''
 ##Decompress files in parallel using named pipes.
@@ -24,11 +25,28 @@ do
  echo ${f%.gz} >> fifos.txt
 done
 
-jellyfish count -C -m !{theK} -s 1000000000 -t !{task.cpus} $(cat fifos.txt | tr '\n' ' ') -o reads.jf
-jellyfish histo -t !{task.cpus} --high !{maxKmerCov} reads.jf > reads.histo
+jellyfish count -C -m !{theK} -s 10000000000 -t !{task.cpus} --upper-count=!{maxKmerCov} $(cat fifos.txt | tr '\n' ' ') -o !{reads}[0].reads.jf
 
 ##Cleanup temporary files. The named pipes won't take up any space.
-rm -f reads.jf
+##rm -f reads.jf
+'''
+}
+
+process jellyfishMerge {
+cpus 10 
+memory "100GB"
+conda "jellyfish"
+input:
+ val theK
+ val maxKmerCov
+ path jellyfishDbs
+output:
+ val theK
+ val maxKmerCov
+ path "reads.histo"
+shell:
+'''
+jellyfish histo -t !{task.cpus} --high !{maxKmerCov} !{jellyfishDbs} > reads.histo
 '''
 }
 
@@ -48,7 +66,7 @@ cd genomescope2.0/
 #Rscript install.R
 #echo "$(head -n 1 install.R)" >> $CONDA_PREFIX/lib/R/etc/Renviron
 
-./genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
+./genomescope2.0/genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 '''
 }
 
@@ -57,7 +75,9 @@ cd genomescope2.0/
 workflow countAndPlot_wf {
  take: kmerK ; maxCov ; reads
  main:
-  jellyfishCount(kmerK,maxCov,reads) | genomeScope2
+  jellyfishCount(kmerK,maxCov,reads)
+  jellyfishMerge(kmerK,maxCov,jellyfishCount.out.jellyFishDbs.collect()) | genomeScope2
+  
 }
 
 workflow {

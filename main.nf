@@ -1,5 +1,7 @@
 nextflow.preview.dsl=2
 
+//// Process definitions ////
+
 process jellyfishCount {
 cpus 10 
 memory "50GB"
@@ -27,7 +29,6 @@ jellyfish histo -t !{task.cpus} --high !{maxKmerCov} reads.jf > reads.histo
 
 ##Cleanup temporary files. The named pipes won't take up any space.
 rm -f reads.jf
-
 '''
 }
 
@@ -47,9 +48,11 @@ cd genomescope2.0/
 #Rscript install.R
 #echo "$(head -n 1 install.R)" >> $CONDA_PREFIX/lib/R/etc/Renviron
 
-genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
+./genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 '''
 }
+
+//// Workflow definitions ////
 
 workflow countAndPlot_wf {
  take: kmerK ; maxCov ; reads

@@ -44,7 +44,7 @@ output:
  path "merged.jf"
 shell:
 '''
-jellyfish merge --high !{maxKmerCov} !{jellyfishDbs} > merged.jf
+jellyfish merge --upper-count=!{maxKmerCov} !{jellyfishDbs} > merged.jf
 '''
 }
 

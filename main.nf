@@ -11,15 +11,15 @@ output:
  path "reads.histo"
 shell:
 '''
-##Decompress files using named pipes.
+##Decompress files in parallel using named pipes.
 for f in !{reads}
 do
  mkfifo ${f%.gz}
  zless $f > ${f%.gz} &
- echo ${f%.gz} > fifos.txt
+ echo ${f%.gz} >> fifos.txt
 done
 
-jellyfish count -C -m !{theK} -s 1000000000 -t !{task.cpus} $(cat fifos.txt | tr "\n" " ") -o reads.jf
+jellyfish count -C -m !{theK} -s 1000000000 -t !{task.cpus} $(cat fifos.txt | tr '\n' ' ') -o reads.jf
 jellyfish histo -t !{task.cpus} reads.jf > reads.histo
 
 ##Cleanup temporary files. The named pipes won't take up any space.

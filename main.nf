@@ -41,10 +41,28 @@ input:
 output:
  val theK
  val maxKmerCov
- path "reads.histo"
+ path "merged.jf"
 shell:
 '''
-jellyfish histo -t !{task.cpus} --high !{maxKmerCov} !{jellyfishDbs} > reads.histo
+jellyfish merge -t !{task.cpus} --high !{maxKmerCov} !{jellyfishDbs} > merged.jf
+'''
+}
+
+process jellyfishHisto {
+cpus 10 
+memory "100GB"
+conda "jellyfish"
+input:
+ val theK
+ val maxKmerCov
+ path jellyfishDbs
+output:
+ val theK
+ val maxKmerCov
+ path "merged.histo"
+shell:
+'''
+jellyfish histo -t !{task.cpus} --high !{maxKmerCov} !{jellyfishDbs} > merged.histo
 '''
 }
 
@@ -74,7 +92,7 @@ workflow countAndPlot_wf {
  take: kmerK ; maxCov ; reads
  main:
   jellyfishCount(kmerK,maxCov,reads)
-  jellyfishMerge(kmerK,maxCov,jellyfishCount.out.jellyfishDbs.collect()) | genomeScope2
+  jellyfishMerge(kmerK,maxCov,jellyfishCount.out.jellyfishDbs.collect()) | jellyfishHisto | genomeScope2
   
 }
 

@@ -32,7 +32,7 @@ rm -f reads.jf
 }
 
 process genomeScope2 {
-conda "r"
+conda "r r-minpack.lm r-argparse"
 input:
  val theK
  val maxKmerCov
@@ -41,11 +41,11 @@ shell:
 '''
 git clone https://github.com/tbenavi1/genomescope2.0.git
 cd genomescope2.0/
-mkdir "$CONDA_PREFIX/lib/R_libs"
-sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" install.R
-Rscript install.R
 
-echo "$(head -n 1 install.R)" >> $CONDAPREFIX/lib/R/etc/Renviron
+#mkdir "$CONDA_PREFIX/lib/R_libs"
+#sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" install.R
+#Rscript install.R
+#echo "$(head -n 1 install.R)" >> $CONDA_PREFIX/lib/R/etc/Renviron
 
 genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 '''
@@ -59,7 +59,7 @@ workflow countAndPlot_wf {
 
 workflow {
  log.info """\
- G E N O M E S C O P E - 2 - N E X T F L O W
+  G E N O M E S C O P E - 2 - N E X T F L O W
  =============================================
  reads        : ${params.reads}
  (If 'null', you have to pass a --reads parameter)

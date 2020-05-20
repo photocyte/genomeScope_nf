@@ -37,6 +37,7 @@ shell:
 '''
 git clone https://github.com/tbenavi1/genomescope2.0.git
 cd genomescope2.0/
+sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" install.R
 Rscript install.R
 genomescope.R -i !{kmerCounts} -o output_dir -k !{theK}
 '''

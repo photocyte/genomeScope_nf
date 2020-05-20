@@ -31,7 +31,7 @@ jellyfish count -C -m !{theK} -s 10000000000 -t !{task.cpus} --upper-count=!{max
 }
 
 process jellyfishMerge {
-cpus 10 
+cpus 1
 memory "100GB"
 conda "jellyfish"
 input:
@@ -44,7 +44,7 @@ output:
  path "merged.jf"
 shell:
 '''
-jellyfish merge -t !{task.cpus} --high !{maxKmerCov} !{jellyfishDbs} > merged.jf
+jellyfish merge --high !{maxKmerCov} !{jellyfishDbs} > merged.jf
 '''
 }
 

@@ -84,12 +84,13 @@ then
 fi
 
 sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" ./genomescope2.0/install.R
+sed -i "s^, lib=local_lib_path^^g" ./genomescope2.0/install.R
 cat ./genomescope2.0/install.R | grep -v "minpack.lm" | grep -v "argparse" > tmp.R ##installs handled by bioconda
 mv -f tmp.R ./genomescope2.0/install.R
 cd ./genomescope2.0/
 Rscript install.R
 
-echo "$(head -n 1 install.R)" >> $CONDA_PREFIX/lib/R/etc/Renviron
+##echo "$(head -n 1 install.R)" >> $CONDA_PREFIX/lib/R/etc/Renviron
 
 ./genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 '''

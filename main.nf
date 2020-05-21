@@ -74,6 +74,8 @@ input:
  val theK
  val maxKmerCov
  path kmerCounts
+output:
+ path "output"
 shell:
 '''
 git clone https://github.com/tbenavi1/genomescope2.0.git

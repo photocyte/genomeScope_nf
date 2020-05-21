@@ -89,11 +89,12 @@ cat ./genomescope2.0/install.R | grep -v "minpack.lm" | grep -v "argparse" > tmp
 mv -f tmp.R ./genomescope2.0/install.R
 cd ./genomescope2.0/
 Rscript install.R
+cd ../
 
 ##echo "$(head -n 1 install.R)" >> $CONDA_PREFIX/lib/R/etc/Renviron
 
 echo "Now running GenomeScope 2.0"
-./genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
+./genomescope2.0/genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 '''
 }
 

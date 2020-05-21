@@ -92,6 +92,7 @@ Rscript install.R
 
 ##echo "$(head -n 1 install.R)" >> $CONDA_PREFIX/lib/R/etc/Renviron
 
+echo "Now running GenomeScope 2.0"
 ./genomescope.R -i !{kmerCounts} -m !{maxKmerCov} -o output_dir -k !{theK}
 '''
 }

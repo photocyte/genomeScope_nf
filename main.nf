@@ -1,4 +1,4 @@
-nextflow.preview.dsl=2
+nextflow.enable.dsl=2
 
 //// Process definitions ////
 
@@ -69,13 +69,14 @@ jellyfish histo -t !{task.cpus} --high=!{maxKmerCov} !{jellyfishDbs} -o merged.h
 
 process genomeScope2 {
 executor "local"
+publishDir './results/' , mode:'link'
 conda "r r-minpack.lm r-argparse"
 input:
  val theK
  val maxKmerCov
  path kmerCounts
 output:
- path "output"
+ path "output_dir/*"
 shell:
 '''
 git clone https://github.com/tbenavi1/genomescope2.0.git

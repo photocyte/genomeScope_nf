@@ -70,7 +70,8 @@ jellyfish histo -t !{task.cpus} --high=!{maxKmerCov} !{jellyfishDbs} -o merged.h
 process genomeScope2 {
 executor "local"
 publishDir './results/' , mode:'link'
-conda "conda-forge::r-minpack.lm conda-forge::r-argparse=1.0.4"
+conda "r::r"
+//conda "conda-forge::r-minpack.lm conda-forge::r-argparse=1.0.4"
 input:
  val theK
  val maxKmerCov
@@ -88,8 +89,8 @@ fi
 
 sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" ./genomescope2.0/install.R
 sed -i "s^, lib=local_lib_path^^g" ./genomescope2.0/install.R
-cat ./genomescope2.0/install.R | grep -v "minpack.lm" | grep -v "argparse" > tmp.R ##installs handled by bioconda
-mv -f tmp.R ./genomescope2.0/install.R
+##cat ./genomescope2.0/install.R | grep -v "minpack.lm" | grep -v "argparse" > tmp.R ##installs handled by bioconda
+##mv -f tmp.R ./genomescope2.0/install.R
 cd ./genomescope2.0/
 Rscript install.R
 cd ../

@@ -70,7 +70,7 @@ jellyfish histo -t !{task.cpus} --high=!{maxKmerCov} !{jellyfishDbs} -o merged.h
 process genomeScope2 {
 executor "local"
 publishDir './results/' , mode:'link'
-conda "bioconda::kmer-jellyfish r::r r::r-devtools"
+conda "bioconda::kmer-jellyfish r::r r::r-devtools r::r-roxygen2"
 input:
  val theK
  val maxKmerCov
@@ -114,7 +114,7 @@ echo "Now running GenomeScope 2.0"
 process smudgeplotHetkmers {
 executor "local"
 cpus 1
-conda "bioconda::kmer-jellyfish r::r r::r-devtools"
+conda "bioconda::kmer-jellyfish r::r r::r-devtools r::r-roxygen2"
 input:
  val theK
  val maxKmerCov
@@ -154,7 +154,7 @@ jellyfish dump -c -L $L -U $U kmer_counts.jf | smudgeplot.py hetkmers -o kmer_pa
 process smudgeplot {
 executor "local"
 publishDir './results/' , mode:'link'
-conda "bioconda::kmer-jellyfish r::r r::r-devtools"
+conda "bioconda::kmer-jellyfish r::r r::r-devtools r::r-roxygen2"
 input:
  val theK
  val maxKmerCov

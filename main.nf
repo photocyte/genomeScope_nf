@@ -88,7 +88,13 @@ then
 fi
 
 ##Set CRAN mirror
-Rscript <(echo 'options(repos=structure(c(CRAN="http://cran.us.r-project.org")))')
+if grep -Fxq 'CRAN="http://cran.us.r-project.org"' ${CONDA_PREFIX}/lib/R/library/base/R/Rprofile
+then
+    ##Do nothing
+else
+    echo 'options(repos=structure(c(CRAN="http://cran.us.r-project.org")))' >> ${CONDA_PREFIX}/lib/R/library/base/R/Rprofile
+fi
+
 
 sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" ./genomescope2.0/install.R
 sed -i "s^, lib=local_lib_path^^g" ./genomescope2.0/install.R

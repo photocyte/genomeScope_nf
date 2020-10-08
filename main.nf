@@ -70,7 +70,7 @@ jellyfish histo -t !{task.cpus} --high=!{maxKmerCov} !{jellyfishDbs} -o merged.h
 process genomeScope2 {
 executor "local"
 publishDir './results/' , mode:'link'
-conda "conda-forge::r-minpack.lm conda-forge::r-argparse"
+conda "conda-forge::r-minpack.lm conda-forge::r-argparse=1.0.4"
 input:
  val theK
  val maxKmerCov

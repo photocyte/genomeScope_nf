@@ -19,7 +19,7 @@ shell:
 for f in !{reads}
 do
  mkfifo ${f%.gz}
- zless $f > ${f%.gz} &
+ gzip -cdqf -- $f > ${f%.gz} &
  echo ${f%.gz} >> fifos.txt
 done
 

@@ -128,6 +128,22 @@ output:
  path "kmer_pairs_coverages_2.tsv"
 shell:
 '''
+git clone https://github.com/KamilSJaron/smudgeplot
+
+##Set CRAN mirror for R
+if grep -Fxq 'CRAN="http://cran.us.r-project.org"' ${CONDA_PREFIX}/lib/R/library/base/R/Rprofile
+then
+    ##Do nothing
+    echo ""
+else
+    echo 'options(repos=structure(c(CRAN="http://cran.us.r-project.org")))' >> ${CONDA_PREFIX}/lib/R/library/base/R/Rprofile
+fi
+
+cd smudgeplot
+Rscript install.R
+install -C exec/smudgeplot.py ${CONDA_PREFIX}/bin
+install -C exec/smudgeplot_plot.R ${CONDA_PREFIX}/bin
+
 L=$(smudgeplot.py cutoff kmer_k21.hist L)
 U=$(smudgeplot.py cutoff kmer_k21.hist U)
 echo $L $U # these need to be sane values like 30 800 or so

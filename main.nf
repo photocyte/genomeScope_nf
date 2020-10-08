@@ -5,7 +5,7 @@ nextflow.enable.dsl=2
 process jellyfishCount {
 cpus 10 
 memory "100GB"
-conda "jellyfish"
+conda "bioconda::jellyfish"
 input:
  val theK
  val maxKmerCov
@@ -34,7 +34,7 @@ process jellyfishMerge {
 executor "local"
 cpus 1
 memory "100GB"
-conda "jellyfish"
+conda "bioconda::jellyfish"
 input:
  val theK
  val maxKmerCov
@@ -52,7 +52,7 @@ jellyfish merge --upper-count=!{maxKmerCov} !{jellyfishDbs} -o merged.jf
 process jellyfishHisto {
 cpus 10 
 memory "100GB"
-conda "jellyfish"
+conda "bioconda::jellyfish"
 input:
  val theK
  val maxKmerCov

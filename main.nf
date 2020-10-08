@@ -87,6 +87,9 @@ then
  mkdir "$CONDA_PREFIX/lib/R_libs"
 fi
 
+##Set CRAN mirror
+Rscript <(echo 'options(repos=structure(c(CRAN="http://cran.us.r-project.org")))')
+
 sed -i "s^\"~/R_libs/\"^\"$CONDA_PREFIX/lib/R_libs\"^g" ./genomescope2.0/install.R
 sed -i "s^, lib=local_lib_path^^g" ./genomescope2.0/install.R
 ##cat ./genomescope2.0/install.R | grep -v "minpack.lm" | grep -v "argparse" > tmp.R ##installs handled by bioconda

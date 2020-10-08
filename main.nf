@@ -119,6 +119,8 @@ input:
  val theK
  val maxKmerCov
  path "kmer_k21.hist"
+ val theK2
+ val maxKmerCov2
  path "kmer_counts.jf"
 output:
  val theK

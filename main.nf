@@ -70,8 +70,7 @@ jellyfish histo -t !{task.cpus} --high=!{maxKmerCov} !{jellyfishDbs} -o merged.h
 process genomeScope2 {
 executor "local"
 publishDir './results/' , mode:'link'
-conda "r::r"
-//conda "conda-forge::r-minpack.lm conda-forge::r-argparse=1.0.4"
+conda "bioconda::kmer-jellyfish r::r"
 input:
  val theK
  val maxKmerCov
@@ -87,10 +86,11 @@ then
  mkdir "$CONDA_PREFIX/lib/R_libs"
 fi
 
-##Set CRAN mirror
+##Set CRAN mirror for R
 if grep -Fxq 'CRAN="http://cran.us.r-project.org"' ${CONDA_PREFIX}/lib/R/library/base/R/Rprofile
 then
     ##Do nothing
+    echo ""
 else
     echo 'options(repos=structure(c(CRAN="http://cran.us.r-project.org")))' >> ${CONDA_PREFIX}/lib/R/library/base/R/Rprofile
 fi
@@ -111,14 +111,71 @@ echo "Now running GenomeScope 2.0"
 '''
 }
 
+process smudgeplotHetkmers {
+executor "local"
+cpus 1
+conda "bioconda::kmer-jellyfish r::r"
+input:
+ val theK
+ val maxKmerCov
+ path "kmer_k21.hist"
+ path "kmer_counts.jf"
+output:
+ val theK
+ val maxKmerCov
+ path "kmer_pairs_coverages_2.tsv"
+shell:
+'''
+L=$(smudgeplot.py cutoff kmer_k21.hist L)
+U=$(smudgeplot.py cutoff kmer_k21.hist U)
+echo $L $U # these need to be sane values like 30 800 or so
+jellyfish dump -c -L $L -U $U kmer_counts.jf | smudgeplot.py hetkmers -o kmer_pairs
+'''
+}
+
+process smudgeplot {
+executor "local"
+publishDir './results/' , mode:'link'
+conda "bioconda::kmer-jellyfish r::r"
+input:
+ val theK
+ val maxKmerCov
+ path kmerPairsCov
+output:
+ path "output_dir/*"
+shell:
+'''
+git clone https://github.com/KamilSJaron/smudgeplot
+
+##Set CRAN mirror for R
+if grep -Fxq 'CRAN="http://cran.us.r-project.org"' ${CONDA_PREFIX}/lib/R/library/base/R/Rprofile
+then
+    ##Do nothing
+    echo ""
+else
+    echo 'options(repos=structure(c(CRAN="http://cran.us.r-project.org")))' >> ${CONDA_PREFIX}/lib/R/library/base/R/Rprofile
+fi
+
+cd smudgeplot
+Rscript install.R
+install -C exec/smudgeplot.py ${CONDA_PREFIX}/bin
+install -C exec/smudgeplot_plot.R ${CONDA_PREFIX}/bin
+
+
+smudgeplot.py plot kmer_pairs_coverages_2.tsv -o my_genome
+'''
+}
+
 //// Workflow definitions ////
 
 workflow countAndPlot_wf {
  take: kmerK ; maxCov ; reads
  main:
   jellyfishCount(kmerK,maxCov,reads)
-  jellyfishMerge(kmerK,maxCov,jellyfishCount.out.jellyfishDbs.collect()) | jellyfishHisto | genomeScope2
-  
+  jellyfishMerge(kmerK,maxCov,jellyfishCount.out.jellyfishDbs.collect()) | jellyfishHisto
+  genomeScope2(jellyfishHisto.out)
+  smudgeplotHetkmers(jellyfishHisto.out,jellyfishMerge.out)  
+  smudgeplot(smudgeplotHetkmers.out)
 }
 
 workflow {
